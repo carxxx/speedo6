@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="transparent">
+    <title>SAMC Telemetry HUD</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main id="speedometer" class="telemetry-hud" aria-label="Vehicle telemetry">
+        <section class="hud-shell">
+            <header class="hud-head no-drag">
+                <div class="brand-block">
+                    <span class="brand-mark">S</span>
+                    <div>
+                        <strong>SAMC</strong>
+                        <span>VEHICLE TELEMETRY</span>
+                    </div>
+                </div>
+
+                <div class="drive-state">
+                    <span class="drive-label">DRIVE</span>
+                    <span id="gear-display" class="gear-value">N</span>
+                </div>
+
+                <div class="hud-actions">
+                    <button id="btn-sync" class="icon-btn" type="button" title="Sync HUD" aria-label="Sync HUD">↗</button>
+                    <button id="btn-scale-down" class="icon-btn" type="button" title="Scale down" aria-label="Scale down">−</button>
+                    <button id="btn-scale-up" class="icon-btn" type="button" title="Scale up" aria-label="Scale up">+</button>
+                    <button id="btn-reset" class="icon-btn reset" type="button" title="Reset HUD" aria-label="Reset HUD">⟲</button>
+                </div>
+            </header>
+
+            <div class="rpm-track" aria-label="Engine RPM">
+                <div class="metric-label">RPM</div>
+                <div class="rpm-segments" id="rpm-segments">
+                    <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                </div>
+                <div id="rpm-value" class="rpm-readout">0.0K</div>
+            </div>
+
+            <div class="hud-main">
+                <div class="speed-block">
+                    <div class="speed-topline">
+                        <span class="eyebrow">CURRENT SPEED</span>
+                        <span id="odometer" class="odometer">000000.0 mi</span>
+                    </div>
+                    <div class="speed-row">
+                        <span id="speed-display" class="speed-value">0</span>
+                        <span id="speed-unit" class="speed-unit">MPH</span>
+                    </div>
+                    <div class="speed-progress">
+                        <div id="speed-progress-fill" class="speed-progress-fill"></div>
+                        <span class="speed-limit-mark mark-50"></span>
+                        <span class="speed-limit-mark mark-100"></span>
+                        <span class="speed-limit-mark mark-150"></span>
+                    </div>
+                </div>
+
+                <div class="status-stack">
+                    <div class="status-cell" id="indicator-engine">
+                        <span class="status-dot"></span>
+                        <span class="status-name">ENGINE</span>
+                        <span id="engine-text" class="status-value">OFF</span>
+                    </div>
+                    <div class="status-cell" id="indicator-headlights">
+                        <span class="status-dot"></span>
+                        <span class="status-name">LIGHTS</span>
+                        <span id="lights-text" class="status-value">OFF</span>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="hud-footer">
+                <div class="indicator-rail no-drag">
+                    <div id="indicator-left" class="tiny-indicator left" title="Left indicator"><span>◀</span></div>
+                    <div id="indicator-seatbelt" class="tiny-indicator seatbelt" title="Seatbelt"><span>SB</span></div>
+                    <div id="indicator-right" class="tiny-indicator right" title="Right indicator"><span>▶</span></div>
+                </div>
+
+                <div class="resource-metrics">
+                    <div class="resource-item">
+                        <div class="resource-head"><span>FUEL</span><strong id="fuel-text">100%</strong></div>
+                        <div class="resource-bar"><span id="fuel-fill"></span></div>
+                    </div>
+                    <div class="resource-item">
+                        <div class="resource-head"><span>VEHICLE</span><strong id="health-text">100%</strong></div>
+                        <div class="resource-bar"><span id="health-fill"></span></div>
+                    </div>
+                </div>
+            </footer>
+
+            <div class="hud-accent"></div>
+        </section>
+
+        <section id="sync-panel" class="sync-panel no-drag hide" aria-label="HUD sync settings">
+            <div class="sync-heading">
+                <div>
+                    <span class="eyebrow">REMOTE DISPLAY</span>
+                    <strong>HUD LINK</strong>
+                </div>
+                <button id="btn-sync-close" class="sync-close" type="button" title="Close">×</button>
+            </div>
+
+            <div class="sync-tabs">
+                <button id="sync-role-host" class="sync-tab active" type="button">HOST</button>
+                <button id="sync-role-client" class="sync-tab" type="button">CLIENT</button>
+            </div>
+
+            <div id="sync-host-panel" class="sync-panel-content">
+                <div class="pair-box">
+                    <span>PAIR CODE</span>
+                    <strong id="sync-host-code">------</strong>
+                </div>
+                <div class="sync-actions">
+                    <button id="btn-host-connect" class="primary-action" type="button">START LINK</button>
+                    <button id="btn-host-disconnect" class="danger-action hide" type="button">DISCONNECT</button>
+                </div>
+            </div>
+
+            <div id="sync-client-panel" class="sync-panel-content hide">
+                <div class="pair-input">
+                    <span>PAIR CODE</span>
+                    <input id="sync-client-code-input" maxlength="6" type="text" placeholder="ABC123" autocomplete="off" spellcheck="false">
+                </div>
+                <div class="sync-actions">
+                    <button id="btn-sync-connect" class="primary-action" type="button">CONNECT</button>
+                    <button id="btn-sync-disconnect" class="danger-action hide" type="button">DISCONNECT</button>
+                </div>
+            </div>
+
+            <div class="sync-status-line">
+                <span id="sync-status-dot" class="status-dot disconnected"></span>
+                <span id="sync-status-text">DISCONNECTED</span>
+            </div>
+        </section>
+    </main>
+
+    <aside id="sync-active-pill" class="sync-active-pill hide no-drag">
+        <div class="sync-pill-dot"></div>
+        <div>
+            <strong id="sync-active-text">HUD LINK ACTIVE</strong>
+            <span>Remote display is receiving telemetry</span>
+        </div>
+        <button id="btn-restore-hud" type="button" title="Restore HUD">×</button>
+    </aside>
+
+    <script src="peer.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
